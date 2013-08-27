@@ -14,7 +14,7 @@ public class Player
 	String name;			// Name of the player
 	Car car;				// The player's car
     Circuit circ;			// The Circuit
-	Ppracing ppr;			// The parental applet
+	GraphRace ppr;			// The parental applet
 	Game game;
 
 	/**
@@ -36,7 +36,7 @@ public class Player
 	* @param starty Vertical start location
 	* @param col Color of the player
 	*/
-	public Player(String nm, int t, Ppracing p, int startx, int starty, Color col)
+	public Player(String nm, int t, GraphRace p, int startx, int starty, Color col)
 	{name = nm;
 	 type = t;
 	 ppr = p;

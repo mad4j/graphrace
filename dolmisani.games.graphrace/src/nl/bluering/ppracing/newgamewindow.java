@@ -19,7 +19,7 @@ import java.awt.event.ActionListener;
 public class newgamewindow extends Frame
 implements ActionListener
 {
-   Ppracing ppr;
+   GraphRace ppr;
    Game game;
 
    Choice cm= new Choice();
@@ -39,7 +39,7 @@ implements ActionListener
    * dialog only once.
    * @param p the applet that wants a new game.
    */
-   public newgamewindow(Ppracing p){
+   public newgamewindow(GraphRace p){
     super("New game");
     ppr=p;
 	game=ppr.getgame();

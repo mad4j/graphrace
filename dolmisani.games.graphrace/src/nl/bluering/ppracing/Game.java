@@ -3,7 +3,7 @@ package nl.bluering.ppracing;
 import java.awt.Color;
 
 public class Game {
-	Ppracing ppr;
+	GraphRace ppr;
 	Circuit circ;
 	Paperview paper;
 	Player[] player; // Array with all participating players
@@ -17,7 +17,7 @@ public class Game {
 
 	boolean client = false, netgame = false;
 
-	public Game(Ppracing p) {
+	public Game(GraphRace p) {
 		ppr = p;
 		circ = new Circuit(50, 40, 30, ppr);
 	}

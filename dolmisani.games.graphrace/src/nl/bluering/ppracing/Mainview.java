@@ -10,7 +10,7 @@ import java.awt.ScrollPane;
  */
 public class Mainview extends ScrollPane implements Runnable {
 
-	Ppracing ppr;
+	GraphRace ppr;
 	Paperview paper;
 	Player player;
 	Game game;
@@ -21,7 +21,7 @@ public class Mainview extends ScrollPane implements Runnable {
 	int[] my = new int[2];
 	Point point;
 
-	Mainview(Ppracing pr) {
+	Mainview(GraphRace pr) {
 		ppr = pr;
 		paper = ppr.paper;
 		game = ppr.getgame();

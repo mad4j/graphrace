@@ -19,7 +19,7 @@ public class Circuit {
 						// circuit
 	Graphics2D gr; // Used to edit the image
 	BufferedImage image;// Graphical representation of the circuit
-	Ppracing ppr; // Parental class
+	GraphRace ppr; // Parental class
 	Polygon curbout, curbin; // Inner field and outter field
 	public boolean correct = false;
 
@@ -41,7 +41,7 @@ public class Circuit {
 	 * @param p
 	 *            Parental game object
 	 */
-	public Circuit(int sx, int sy, int chk, Ppracing p) {
+	public Circuit(int sx, int sy, int chk, GraphRace p) {
 		sizex = sx + 2 * MG;
 		sizey = sy + 2 * MG;
 		checkpoints = chk;
@@ -575,12 +575,12 @@ public class Circuit {
 	/*********************************************************
 	 * For testing purposes only:
 	 */
-	public Circuit(Ppracing p) {
+	public Circuit(GraphRace p) {
 		ppr = p;
 	}
 
 	public static void main(String[] ps) {
-		Ppracing p = new Ppracing();
+		GraphRace p = new GraphRace();
 		Circuit c = new Circuit(p);
 		String t = "6,3,011010150011011100";
 		System.out.println(t);

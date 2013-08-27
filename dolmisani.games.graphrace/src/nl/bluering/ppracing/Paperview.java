@@ -13,7 +13,7 @@ import java.awt.image.BufferedImage;
  */
 public class Paperview extends Canvas {
 	Circuit circ; // The circuit
-	Ppracing ppr; // The parental applet
+	GraphRace ppr; // The parental applet
 	Graphics2D gr;
 	Game game;
 	int x, y, x_oud, y_oud, vx, vy; // Locations of the car and their speed
@@ -30,7 +30,7 @@ public class Paperview extends Canvas {
 	 * @param p
 	 *            The parental applet
 	 */
-	public Paperview(Circuit c, Ppracing p) {
+	public Paperview(Circuit c, GraphRace p) {
 		circ = c;
 		ppr = p;
 		game = ppr.getgame();
