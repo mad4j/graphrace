@@ -50,8 +50,8 @@ public class Mainview extends ScrollPane implements Runnable {
 		/**
 		 * Initialise begin and end points.
 		 */
-		endpoint = new Point(player.getcar().getx() * game.gridsize
-				- (int) getSize().getWidth() / 2, player.getcar().gety()
+		endpoint = new Point(player.getcar().getCurrentPos().getX() * game.gridsize
+				- (int) getSize().getWidth() / 2, player.getcar().getCurrentPos().getY()
 				* game.gridsize - (int) getSize().getHeight() / 2);
 		point = getScrollPosition();
 

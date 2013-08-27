@@ -7,14 +7,19 @@ import java.awt.Polygon;
 import java.awt.image.BufferedImage;
 import java.util.StringTokenizer;
 
+import dolmisani.games.graphrace.Position;
+
 /**
  * This class constructs a new circuit, and makes a representation of it in a
  * BufferedImage
  */
 public class Circuit {
+	
 	int[][] circ; // Storage array for circuit-points
 	int sizex, sizey; // Horizontal and vertical size of the circuit
+	
 	public int starty, startx1, startx2; // Location of the start/finish line
+	
 	int checkpoints; // Number of checkpoints; this is used to render the
 						// circuit
 	Graphics2D gr; // Used to edit the image
@@ -56,7 +61,9 @@ public class Circuit {
 		circ = new int[sizex][sizey];
 		chkx = new int[checkpoints + MG];
 		chky = new int[checkpoints + MG];
+
 		trace(); // Find some random checkpoints, and render a circuit
+		
 		setstart(); // Find start/finishline
 
 		gridsize = ppr.getgame().getgridsize();
@@ -93,10 +100,17 @@ public class Circuit {
 	 * 
 	 * @return 1 or higher if the coordinate contains tarmac
 	 */
-	public int terrain(int x, int y) {
-		if ((x < 0) || (x >= sizex) || (y < 0) || (y >= sizey))
+	public int terrain(Position p) {
+		
+		if ((p.getX() < 0) || (p.getX() >= sizex) || (p.getY() < 0) || (p.getY() >= sizey)) {
 			return -1;
-		return circ[x][y];
+		}
+		return circ[p.getX()][p.getY()];
+	}
+	
+	//TODO: to be removed
+	public int terrain(int x, int y) {
+		return terrain(new Position(x, y));
 	}
 
 	/*
@@ -132,42 +146,6 @@ public class Circuit {
 	 */
 	public int getstartx2() {
 		return startx2;
-	}
-
-	/**
-	 * @return the String version of the circuit, for uploading to network
-	 */
-	public String download() {
-		String s = sizex + "," + sizey + ",";
-		for (int y = 0; y < sizey; y++)
-			for (int x = 0; x < sizex; x++)
-				s += circ[x][y];
-		return s;
-	}
-
-	/**
-	 * Sets the circuit to the given String.
-	 */
-	public void upload(String s) {
-		correct = false;
-		StringTokenizer st = new StringTokenizer(s, ",");
-		String n = "";
-		int pos;
-		try {
-			sizex = Integer.parseInt(st.nextToken());
-			sizey = Integer.parseInt(st.nextToken());
-			n = st.nextToken();
-			circ = new int[sizex][sizey];
-			for (int y = 0; y < sizey; y++)
-				for (int x = 0; x < sizex; x++) {
-					pos = y * sizex + x;
-					circ[x][y] = Integer.parseInt(n.substring(pos, pos + 1));
-				}
-			correct = true;
-			setstart();
-			dographics();
-		} catch (Exception e) {
-		}
 	}
 
 	/*--------------------------------------------------------------*/
@@ -577,14 +555,5 @@ public class Circuit {
 	 */
 	public Circuit(GraphRace p) {
 		ppr = p;
-	}
-
-	public static void main(String[] ps) {
-		GraphRace p = new GraphRace();
-		Circuit c = new Circuit(p);
-		String t = "6,3,011010150011011100";
-		System.out.println(t);
-		c.upload(t);
-		System.out.println(c.download());
 	}
 }

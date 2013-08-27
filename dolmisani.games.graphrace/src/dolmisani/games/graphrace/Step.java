@@ -39,6 +39,6 @@ public class Step {
 	@Override
 	public String toString() {
 		
-		return String.format("[%d, %d]", deltaX, deltaY);
+		return String.format("(%d, %d)", deltaX, deltaY);
 	}
 }

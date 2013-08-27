@@ -117,10 +117,10 @@ public class Game {
 		for (int i = 0; i < playercount; i++) // Repeat for all players
 		{
 			c = player[i].getcar();
-			vx = c.getvector().getDeltaX();
-			vy = c.getvector().getDeltaY();
-			x1 = c.getx() - vx;
-			y1 = c.gety() - vy;
+			vx = c.getLastStep().getDeltaX();
+			vy = c.getLastStep().getDeltaY();
+			x1 = c.getCurrentPos().getX() - vx;
+			y1 = c.getCurrentPos().getY() - vy;
 			if (vx == 0) // Car goes Vertical
 			{
 				if ((x1 + vx >= sx1) && (x1 + vx <= sx2)) // Within finish line

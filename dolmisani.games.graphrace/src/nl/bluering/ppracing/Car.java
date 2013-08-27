@@ -2,6 +2,7 @@ package nl.bluering.ppracing;
 
 import java.awt.Color;
 
+import dolmisani.games.graphrace.Position;
 import dolmisani.games.graphrace.Step;
 
 /**
@@ -9,10 +10,12 @@ import dolmisani.games.graphrace.Step;
  * the car. It also features an undo-function. The car is moved, using vectors.
  */
 public class Car {
-	int x, y, // The current position of the car
-			startx, starty; // The start position of the car
-	Color color; // The color of the car
-	int turn = 0; // The number of moves
+	
+	private Position currentPos;
+	private Position startPos;
+	
+	private Color color;
+	private int turn = 0;
 
 	/**
 	 * When a car hits the grass, the speed is reduced to zero. Therefore, after
@@ -35,10 +38,10 @@ public class Car {
 	 *            Color of the car
 	 */
 	public Car(int sx, int sy, Color c) {
-		x = sx;
-		y = sy;
-		startx = sx;
-		starty = sy;
+
+		currentPos = new Position(sx, sy);
+		startPos = new Position(sx, sy);
+		
 		hist[0] = new Step(0, 0);
 		color = c;
 		for (int i = 0; i < 500; i++)
@@ -48,13 +51,13 @@ public class Car {
 	/**
 	 * Moves the car using the given vector
 	 * 
-	 * @param vec
+	 * @param step
 	 *            The new speed-vector
 	 */
-	public void move(Step vec) {
-		x += vec.getDeltaX();
-		y += vec.getDeltaY();
-		hist[++turn] = vec;
+	public void move(Step step) {
+		
+		currentPos.moveTo(step);
+		hist[++turn] = step;
 	}
 
 	/**
@@ -65,34 +68,15 @@ public class Car {
 		faultcount++;
 	}
 
-	/**
-	 * @return The horizontal position of the car
-	 */
-	public int getx() {
-		return x;
+	public Position getCurrentPos() {
+		
+		return currentPos;
 	}
 
-	/**
-	 * @return The vertical position of the car
-	 */
-	public int gety() {
-		return y;
+	public Position getStartPos() {
+		return startPos;
 	}
-
-	/**
-	 * @return The horizontal start-position of the car
-	 */
-	public int getstartx() {
-		return startx;
-	}
-
-	/**
-	 * @return The vertical start-position of the car
-	 */
-	public int getstarty() {
-		return starty;
-	}
-
+	
 	/**
 	 * @return The number of turns done, including erronous
 	 */
@@ -119,7 +103,7 @@ public class Car {
 	/**
 	 * @return The current movement-vector
 	 */
-	public Step getvector() {
+	public Step getLastStep() {
 		return hist[turn];
 	}
 
@@ -130,27 +114,23 @@ public class Car {
 		return hist[turn].length();
 	}
 
-	/**
-	 * @return The color of the car
-	 */
-	public Color getcolor() {
+	
+	public Color getColor() {
 		return color;
 	}
 
-	/**
-	 * @return A string representation of the car, including position and
-	 *         movement
-	 */
+	@Override
 	public String toString() {
-		return ("Car(" + x + "," + y + "," + hist[turn] + ")");
+		return String.format("Car[%s - %s]", currentPos, getLastStep());
 	}
 
 	/**
 	 * This function undos the last players' move
 	 */
 	public void undo() {
-		x -= hist[turn].getDeltaX();
-		y -= hist[turn].getDeltaY();
+		
+		currentPos.backFrom(getLastStep());
+		
 		if (--turn < 0)
 			turn = 0;
 		else if (fault[turn + 1]) {

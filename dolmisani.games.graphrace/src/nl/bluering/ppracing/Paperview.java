@@ -56,8 +56,8 @@ public class Paperview extends Canvas {
 		if (game.finished()) {
 			gr.setFont(new Font("Helvetica", Font.BOLD, 30));
 			gr.setColor(new Color(230, 240, 240));
-			int x = game.currentplayer().getcar().getx() * game.gridsize - 300, y = game
-					.currentplayer().getcar().gety()
+			int x = game.currentplayer().getcar().getCurrentPos().getX() * game.gridsize - 300, y = game
+					.currentplayer().getcar().getCurrentPos().getY()
 					* game.gridsize - 15;
 			gr.drawString("Player " + game.currentplayer().getname()
 					+ " has Finished!", x, y);
@@ -99,10 +99,12 @@ public class Paperview extends Canvas {
 		for (j = 0; j <= game.getplayercount(); j++) // Repeat for all players
 		{
 			c = game.getplayer(j).getcar();
-			color = c.getcolor();
+			color = c.getColor();
 			l = c.getturns();
-			sx = c.getstartx(); // Get the startposition to draw from
-			sy = c.getstarty();
+			
+			sx = c.getStartPos().getX();
+			sy = c.getStartPos().getY();
+			
 			x1 = sx;
 			y1 = sy;
 			for (i = 0; i <= l; i++) {
@@ -124,8 +126,8 @@ public class Paperview extends Canvas {
 		game.currentplayer().checkterrain(); // Check if the speed is still
 												// correct...
 		Car c = game.currentplayer().getcar();
-		int x = c.getx() + c.getvector().getDeltaX(), y = c.gety()
-				+ c.getvector().getDeltaY();
+		int x = c.getCurrentPos().getX() + c.getLastStep().getDeltaX(), y = c.getCurrentPos().getY()
+				+ c.getLastStep().getDeltaY();
 		/**
 		 * The player can move to 5 locations, some of them are on grass, and
 		 * will be coloured differently

@@ -164,9 +164,9 @@ public class GraphRace extends java.applet.Applet implements MouseListener,
 	 * sets a given text in the player label.
 	 */
 	public void showcurrentplayer() {
-		playerlabel.setForeground(game.currentplayer().getcar().getcolor());
+		playerlabel.setForeground(game.currentplayer().getcar().getColor());
 		playerlabel.setText("Player: " + game.currentplayer().getname()
-				+ ", Moving: " + game.currentplayer().getcar().getvector());
+				+ ", Moving: " + game.currentplayer().getcar().getLastStep());
 	}
 
 	public void setmessages() {

@@ -88,8 +88,8 @@ public class Player
 	* @param x Vertical (circuit) location
 	*/
 	public synchronized void clicked(int x, int y)
-	{int cx = car.getx()+car.getvector().getDeltaX(),
-	     cy	= car.gety()+car.getvector().getDeltaY();
+	{int cx = car.getCurrentPos().getX()+car.getLastStep().getDeltaX(),
+	     cy	= car.getCurrentPos().getY()+car.getLastStep().getDeltaY();
 	 int m=-1;
 	 if((x==cx) && (y==cy)) m=SAME;
 	 else if ((cx-x==-1)&& (cy-y==0)) m=RIGHT;
@@ -104,7 +104,7 @@ public class Player
 	* @param m One of: LEFT, RIGHT, UP, DOWN, SAME
 	*/
 	public synchronized void move(int m)
-	{Step v = car.getvector();
+	{Step v = car.getLastStep();
 	 if(game.finished()) return;
 	 switch (m)
 	 {case LEFT:  movecar(v.getDeltaX()-1,v.getDeltaY()); break;
@@ -132,7 +132,7 @@ public class Player
 	* Checks if the car has hit the grass. If so, the speed is reduced to (0,0)
 	*/
 	public synchronized void checkterrain()
-	{if (circ.terrain(car.getx(), car.gety())==0)
+	{if (circ.terrain(car.getCurrentPos())==0)
 	 {car.move(new Step(0,0));					// Grass/gravel Speed reduced to zero
 	  car.fault();
 	 }
@@ -174,11 +174,11 @@ public class Player
 	  cy = circ.getsizey()/2;	// The y-coordinate of the center of the circuit
 
 	  level = 6 + (int)Math.round(car.getspeed()*1.4);	// Level is the depth of the search
-	  grass = (circ.terrain(car.getx(),car.gety()) <= 0);					// Is the car currently at the grass?
+	  grass = (circ.terrain(car.getCurrentPos()) <= 0);					// Is the car currently at the grass?
 
-   	  Step v = car.getvector();
-	  distance = Math.atan2(-(cy-car.gety()),(cx-car.getx()))+Math.PI;	// Update the current distance of the car
-	  mv = ai(car.getx(),car.gety(),v.getDeltaX(),v.getDeltaY(),level);
+   	  Step v = car.getLastStep();
+	  distance = Math.atan2(-(cy-car.getCurrentPos().getY()),(cx-car.getCurrentPos().getX()))+Math.PI;	// Update the current distance of the car
+	  mv = ai(car.getCurrentPos().getX(),car.getCurrentPos().getY(),v.getDeltaX(),v.getDeltaY(),level);
  	  move((int) mv);
 	}
 
