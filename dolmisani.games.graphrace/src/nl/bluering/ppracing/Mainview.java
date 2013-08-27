@@ -104,8 +104,6 @@ public class Mainview extends ScrollPane implements Runnable {
 		paper.requestFocus();
 		game.wait = false;
 
-		if (game.isnetgame() && game.currentplayer().isai())
-			game.currentplayer().ask();
 	}
 
 	/**

@@ -15,8 +15,6 @@ public class Game {
 			gamestarted = false; // True if the game is running
 	final static int gridsize = 20; // The size of the grid
 
-	NetClient nc;
-	NetSClient nsc;
 	boolean client = false, netgame = false;
 
 	public Game(Ppracing p) {
@@ -55,12 +53,6 @@ public class Game {
 			player[i] = new Player(name[i], type[i], ppr, startpos(i), sy, c);
 		}
 
-		if (netgame && !client) {
-			nsc.outname();
-			nsc.outcircuit();
-			nsc.startgame();
-		}
-
 		paper.rebuffer();
 		ppr.showcurrentplayer();
 		ppr.turnlabel.setText("Turn: 0");
@@ -88,60 +80,7 @@ public class Game {
 			ppr.setmessages();
 	}
 
-	// ------------------------------------------------
-	// ------ Functions for networked games -----------
-	/**
-	 * Starts a new game with this player as client
-	 */
-	public void newnetgame(NetClient n) {
-		netgame = true;
-		client = true;
-		nc = n;
-		newgame(nc.getplayertype(), nc.getplayerlist());
-	}
-
-	/**
-	 * Starts a new game with this player as server
-	 */
-	public void newnetgame(NetSClient n) {
-		netgame = true;
-		client = false;
-		nsc = n;
-		newgame(nsc.getplayertype(), nsc.getplayerlist());
-	}
-
-	public void sendmove(int i) {
-		if (netgame && !client)
-			nsc.outmove(i);
-		else if (netgame && onturn())
-			nc.outmove(i);
-	}
-
-	public boolean isnetgame() {
-		return netgame;
-	}
-
-	public boolean isserver() {
-		return !client;
-	}
-
-	public boolean onturn() {
-		if (client) {
-			if (curplayer == nc.getid())
-				return true;
-		} else {
-			if (curplayer == nsc.getid())
-				return true;
-		}
-		return false;
-	}
-
-	public void takeover(int id) {
-		player[id].settype(Player.COM);
-		if (curplayer == id)
-			getplayer(id).ask();
-	}
-
+	
 	// ---------------------------------------------------------------------
 	// ------ Functions for checking if a player has finshed already -------
 	/**
@@ -159,16 +98,7 @@ public class Game {
 		ppr.message(getplayer(winner).getname() + " WINS!!!");
 		ppr.undo.setEnabled(false);
 		ppr.move.setEnabled(false);
-		if (netgame) {
-			if (client) {
-				nc.netwin.setState(java.awt.Frame.NORMAL);
-			} else {
-				nsc.netwin.setState(java.awt.Frame.NORMAL);
-				nsc.endgame("[Player " + player[winner].getname()
-						+ " finished first!]");
-				nsc.game.gamestarted = false;
-			}
-		}
+		
 	}
 
 	/**

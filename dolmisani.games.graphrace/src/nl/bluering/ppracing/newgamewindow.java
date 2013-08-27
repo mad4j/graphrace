@@ -143,10 +143,7 @@ implements ActionListener
     else if(e.getSource()==normal)
 	{normalgame();
     }
-    else if(e.getSource()==network)
-	{dispose();
-	 new newnetwindow(ppr);
-    }
+   
    }
 }
 

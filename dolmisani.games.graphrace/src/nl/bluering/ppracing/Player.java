@@ -117,8 +117,6 @@ public class Player
 	 ppr.paper.rebuffer();
 	 ppr.repaint();
 	 
-	 if(game.isnetgame())
-	  if(game.onturn()||game.currentplayer().isai()) game.sendmove(m);
 	 game.nextplayer();
 	 game.wait=false;
 	}
