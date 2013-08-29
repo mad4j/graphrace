@@ -1,11 +1,12 @@
 package nl.bluering.ppracing;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
+import java.awt.Stroke;
 import java.awt.image.BufferedImage;
-import java.util.StringTokenizer;
 
 import dolmisani.games.graphrace.Position;
 
@@ -14,12 +15,20 @@ import dolmisani.games.graphrace.Position;
  * BufferedImage
  */
 public class Circuit {
+
+	private static final Stroke GRID_STROKE = new BasicStroke(1.0f,
+			BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, new float[] {
+					5.0f, 2.0f }, 0.0f);
 	
+	private static final Stroke TRACK_STROKE = new BasicStroke(2.5f,
+			BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+
+
 	int[][] circ; // Storage array for circuit-points
 	int sizex, sizey; // Horizontal and vertical size of the circuit
-	
+
 	public int starty, startx1, startx2; // Location of the start/finish line
-	
+
 	int checkpoints; // Number of checkpoints; this is used to render the
 						// circuit
 	Graphics2D gr; // Used to edit the image
@@ -51,7 +60,6 @@ public class Circuit {
 		sizey = sy + 2 * MG;
 		checkpoints = chk;
 		ppr = p;
-		// init();
 	}
 
 	/**
@@ -63,7 +71,7 @@ public class Circuit {
 		chky = new int[checkpoints + MG];
 
 		trace(); // Find some random checkpoints, and render a circuit
-		
+
 		setstart(); // Find start/finishline
 
 		gridsize = ppr.getgame().getgridsize();
@@ -80,6 +88,10 @@ public class Circuit {
 
 		image = new BufferedImage(hsize, vsize, BufferedImage.TYPE_INT_RGB);
 		gr = image.createGraphics();
+
+		gr.setColor(Color.WHITE);
+		gr.fillRect(0, 0, hsize, vsize);
+
 		teken_grid(); // Draw the circuit-points
 		curbout = new Polygon();
 		curbin = new Polygon();
@@ -101,14 +113,15 @@ public class Circuit {
 	 * @return 1 or higher if the coordinate contains tarmac
 	 */
 	public int terrain(Position p) {
-		
-		if ((p.getX() < 0) || (p.getX() >= sizex) || (p.getY() < 0) || (p.getY() >= sizey)) {
+
+		if ((p.getX() < 0) || (p.getX() >= sizex) || (p.getY() < 0)
+				|| (p.getY() >= sizey)) {
 			return -1;
 		}
 		return circ[p.getX()][p.getY()];
 	}
-	
-	//TODO: to be removed
+
+	// TODO: to be removed
 	public int terrain(int x, int y) {
 		return terrain(new Position(x, y));
 	}
@@ -249,15 +262,21 @@ public class Circuit {
 	 * This function calculates the start/finish coordinates
 	 */
 	void setstart() {
-		starty = (int) getsizey() / 2;
-		int x = (int) getsizex() / 2;
 
-		while (terrain(x++, starty) == 0)
-			;
-		startx1 = x - 1;
-		while (terrain(x++, starty) != 0)
-			;
-		startx2 = x;
+		starty = getsizey() / 2;
+		Position p = new Position(getsizex() / 2, starty);
+
+		while (terrain(p) == 0) {
+			p.moveTo(+1, 0);
+		}
+
+		startx1 = p.getX();
+
+		while (terrain(p) != 0) {
+			p.moveTo(+1, 0);
+		}
+
+		startx2 = p.getX() + 1;
 	}
 
 	/*--------------------------------------------------------------*/
@@ -275,30 +294,16 @@ public class Circuit {
 	 */
 	void teken_grid() {
 		int a, b, x, y;
-		Color c = new Color(70, 70, 70);
+		// Color c = new Color(70, 70, 70);
+
+		Color c = Color.LIGHT_GRAY;
+
 		for (x = 0; x < sizex; x++)
 			// Draw vertical gridlines
-			line(x, 0, x, sizey, c);
+			line(x, 0, x, sizey, c, GRID_STROKE);
 		for (y = 0; y < sizey; y++)
 			// Draw horizontal gridlines
-			line(0, y, sizex, y, c);
-		c = new Color(60, 60, 60); // Draw cool gridlines
-		for (y = 0; y < sizey; y++)
-			line(0, y, y, sizex, c);
-		for (y = 0; y < sizey; y++)
-			line(y, 0, sizex, y, c);
-
-		for (x = 0; x <= sizex; x++)
-			// Draw the gridpoints
-			for (y = 0; y <= sizey; y++)
-				pixel(x, y, Color.green);
-
-		for (x = 0; x < sizex; x++)
-			for (y = 0; y < sizey; y++) {
-				if (terrain(x, y) != 0) {
-					pixel(x, y, Color.white);
-				}
-			}
+			line(0, y, sizex, y, c, GRID_STROKE);
 	}
 
 	int x, y, vx, vy, x_oud, y_oud, vx_oud, vy_oud, curbcount;
@@ -393,7 +398,7 @@ public class Circuit {
 					baan = rechtdoor();
 				terug();
 				curb = !curb;
-				line(x1, y1, x, y, curb ? Color.yellow : Color.red);
+				line(x1, y1, x, y, Color.BLACK, TRACK_STROKE);
 				n++;
 				pol.addPoint(x * gridsize, y * gridsize);
 				z++;
@@ -496,21 +501,15 @@ public class Circuit {
 	/**
 	 * Draws a line between two points
 	 */
-	void line(int x1, int y1, int x2, int y2, Color c) {
+	void line(int x1, int y1, int x2, int y2, Color c, Stroke stroke) {
+		
 		gr.setColor(c);
+		gr.setStroke(stroke);
+
 		if ((x1 < 0) || (y1 < 0) || (x2 < 0) || (y2 < 0))
 			return;
+		
 		gr.drawLine(x1 * gridsize, y1 * gridsize, x2 * gridsize, y2 * gridsize);
-	}
-
-	/**
-	 * Draws a single pixel on a given location
-	 */
-	void pixel(int x, int y, Color c) {
-		gr.setColor(c);
-		if ((x < 0) || (y < 0))
-			return;
-		gr.drawLine(x * gridsize, y * gridsize, x * gridsize, y * gridsize);
 	}
 
 	/**

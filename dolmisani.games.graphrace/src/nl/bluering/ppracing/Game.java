@@ -13,9 +13,7 @@ public class Game {
 	boolean finish = false, // A player has won
 			wait = true, // Waiting for a routine to finish
 			gamestarted = false; // True if the game is running
-	final static int gridsize = 20; // The size of the grid
-
-	boolean client = false, netgame = false;
+	final static int gridsize = 25; // The size of the grid
 
 	public Game(GraphRace p) {
 		ppr = p;
@@ -37,8 +35,8 @@ public class Game {
 		System.out.println("\n---NEW GAME---");
 		gamestarted = true;
 		paper = ppr.getpaper();
-		if (!netgame)
-			circ.init(); // Initialise the circuit, in network-mode this is done
+
+		circ.init(); // Initialise the circuit, in network-mode this is done
 							// before
 		int sx = circ.getstartx1(), // Get the start/finish location
 		sy = circ.getstarty();
@@ -58,11 +56,8 @@ public class Game {
 		ppr.turnlabel.setText("Turn: 0");
 		finish = false;
 		winner = 0;
-
-		if (!netgame) {
-			ppr.move.setEnabled(true);
-			ppr.undo.setEnabled(true);
-		}
+		
+		ppr.move.setEnabled(true);
 
 		curplayer = playercount;
 		nextplayer();
@@ -96,7 +91,6 @@ public class Game {
 		finish = true;
 		curplayer = winner;
 		ppr.message(getplayer(winner).getname() + " WINS!!!");
-		ppr.undo.setEnabled(false);
 		ppr.move.setEnabled(false);
 		
 	}
@@ -224,7 +218,7 @@ public class Game {
 	public void undo() {
 		if (--curplayer < 0)
 			curplayer = playercount - 1;
-		currentplayer().getcar().undo();
+//		currentplayer().getcar().undo();
 		ppr.showcurrentplayer();
 		ppr.main.start();
 	}

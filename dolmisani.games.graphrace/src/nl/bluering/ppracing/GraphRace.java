@@ -82,7 +82,7 @@ public class GraphRace extends java.applet.Applet implements MouseListener,
 	Label playerlabel = new Label(), turnlabel = new Label("Turn: 0"),
 			messagelabel = new Label("Do a move");
 
-	Button newgame = new Button("new game"), undo = new Button("undo move"),
+	Button newgame = new Button("new game"),
 			move = new Button("computer move");
 	Panel bottompanel = new Panel();
 
@@ -98,7 +98,7 @@ public class GraphRace extends java.applet.Applet implements MouseListener,
 		main.add(paper);
 		main.setSize(600, 500);
 
-		setBackground(Color.black); // you can set the background color of the
+		setBackground(Color.BLACK); // you can set the background color of the
 									// applet in this line
 		messagelabel.setForeground(Color.white);
 		messagelabel.setAlignment(Label.CENTER);
@@ -110,7 +110,6 @@ public class GraphRace extends java.applet.Applet implements MouseListener,
 														// each other
 		buttonpanel.add(newgame);
 		buttonpanel.add(move);
-		buttonpanel.add(undo);
 		Panel superpanel = new Panel();
 		superpanel.setLayout(new GridLayout(2, 1));
 		setLayout(new BorderLayout());
@@ -129,7 +128,6 @@ public class GraphRace extends java.applet.Applet implements MouseListener,
 		paper.addKeyListener(this);
 		addKeyListener(this);
 		newgame.addActionListener(this);
-		undo.addActionListener(this);
 		move.addActionListener(this);
 
 		int[] startplayers = { Player.COM, Player.HUM };
@@ -177,8 +175,6 @@ public class GraphRace extends java.applet.Applet implements MouseListener,
 			message(game.getplayer(game.winner).getname() + " WINS!!!");
 		else if (game.currentplayer().isai())
 			message("Click or press a key");
-		else if (game.currentplayer().isnet())
-			message("Waiting for networkplayer to move.");
 		else
 			message("Do a move");
 	}
@@ -303,8 +299,6 @@ public class GraphRace extends java.applet.Applet implements MouseListener,
 	public void actionPerformed(ActionEvent avt) {
 		if (avt.getSource() == newgame)
 			new newgamewindow(this);
-		else if ((avt.getSource() == undo) && !game.wait)
-			game.undo();
 		else if ((avt.getSource() == move) && !game.wait)
 			game.currentplayer().ask();
 		repaint();

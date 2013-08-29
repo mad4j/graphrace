@@ -12,6 +12,7 @@ import java.awt.image.BufferedImage;
  * to a Graphics object, and adds the cars and their movement to it.
  */
 public class Paperview extends Canvas {
+	
 	Circuit circ; // The circuit
 	GraphRace ppr; // The parental applet
 	Graphics2D gr;
@@ -49,15 +50,19 @@ public class Paperview extends Canvas {
 	 * Buffers the current image, for faster painting.
 	 */
 	public void rebuffer() {
+		
 		circ.paint(gr);
+		
 		drawcar();
 		if (cursordraw)
 			drawcursor();
 		if (game.finished()) {
 			gr.setFont(new Font("Helvetica", Font.BOLD, 30));
 			gr.setColor(new Color(230, 240, 240));
-			int x = game.currentplayer().getcar().getCurrentPos().getX() * game.gridsize - 300, y = game
-					.currentplayer().getcar().getCurrentPos().getY()
+
+			int x = game.currentplayer().getcar().getCurrentPos().getX()
+					* game.gridsize - 300, y = game.currentplayer().getcar()
+					.getCurrentPos().getY()
 					* game.gridsize - 15;
 			gr.drawString("Player " + game.currentplayer().getname()
 					+ " has Finished!", x, y);
@@ -101,10 +106,10 @@ public class Paperview extends Canvas {
 			c = game.getplayer(j).getcar();
 			color = c.getColor();
 			l = c.getturns();
-			
+
 			sx = c.getStartPos().getX();
 			sy = c.getStartPos().getY();
-			
+
 			x1 = sx;
 			y1 = sy;
 			for (i = 0; i <= l; i++) {
@@ -126,8 +131,8 @@ public class Paperview extends Canvas {
 		game.currentplayer().checkterrain(); // Check if the speed is still
 												// correct...
 		Car c = game.currentplayer().getcar();
-		int x = c.getCurrentPos().getX() + c.getLastStep().getDeltaX(), y = c.getCurrentPos().getY()
-				+ c.getLastStep().getDeltaY();
+		int x = c.getCurrentPos().getX() + c.getLastStep().getDeltaX(), y = c
+				.getCurrentPos().getY() + c.getLastStep().getDeltaY();
 		/**
 		 * The player can move to 5 locations, some of them are on grass, and
 		 * will be coloured differently

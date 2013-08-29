@@ -127,16 +127,16 @@ public class Car {
 	/**
 	 * This function undos the last players' move
 	 */
-	public void undo() {
-		
-		currentPos.backFrom(getLastStep());
-		
-		if (--turn < 0)
-			turn = 0;
-		else if (fault[turn + 1]) {
-			undo();
-			faultcount--;
-			fault[turn + 1] = false;
-		}
-	}
+//	public void undo() {
+//		
+//		currentPos.backFrom(getLastStep());
+//		
+//		if (--turn < 0)
+//			turn = 0;
+//		else if (fault[turn + 1]) {
+//			undo();
+//			faultcount--;
+//			fault[turn + 1] = false;
+//		}
+//	}
 }

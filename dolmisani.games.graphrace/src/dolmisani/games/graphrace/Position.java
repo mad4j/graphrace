@@ -32,10 +32,16 @@ public class Position {
 		this.y += s.getDeltaY();
 	}
 	
-	public void backFrom(Step s) {
-		this.x -= s.getDeltaX();
-		this.y -= s.getDeltaY();
+	public void moveTo(int deltaX, int deltaY) {
+		
+		this.x += deltaX;
+		this.y += deltaY;
 	}
+	
+//	public void backFrom(Step s) {
+//		this.x -= s.getDeltaX();
+//		this.y -= s.getDeltaY();
+//	}
 	
 	@Override
 	public String toString() {
