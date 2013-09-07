@@ -17,7 +17,7 @@ public class Game {
 
 	public Game(GraphRace p) {
 		ppr = p;
-		circ = new Circuit(50, 40, 30, ppr);
+		circ = new Circuit(50, 40, 30, gridsize);
 	}
 
 	// --------------------------------------------------------
@@ -107,7 +107,7 @@ public class Game {
 		int vx, vy, x1, y1, ret = -1;
 		double rc = 0;
 		double x;
-		int sy = circ.starty, sx1 = circ.startx1 - 1, sx2 = circ.startx2 - 1;
+		int sy = circ.getstarty(), sx1 = circ.getstartx1() - 1, sx2 = circ.getstartx2() - 1;
 		for (int i = 0; i < playercount; i++) // Repeat for all players
 		{
 			c = player[i].getcar();

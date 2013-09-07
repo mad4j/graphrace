@@ -4,8 +4,8 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Polygon;
 import java.awt.Stroke;
+import java.awt.geom.GeneralPath;
 import java.awt.image.BufferedImage;
 
 import dolmisani.games.graphrace.Position;
@@ -20,26 +20,28 @@ public class Circuit {
 			BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, new float[] {
 					5.0f, 2.0f }, 0.0f);
 	
-	private static final Stroke TRACK_STROKE = new BasicStroke(2.5f,
-			BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+	private static final Stroke TRACK_STROKE = new BasicStroke(2.0f,
+			BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10.0f);
 
 
-	int[][] circ; // Storage array for circuit-points
-	int sizex, sizey; // Horizontal and vertical size of the circuit
+	private int[][] circ; // Storage array for circuit-points
+	
+	private int width;
+	private int height;
 
-	public int starty, startx1, startx2; // Location of the start/finish line
+	private int starty, startx1, startx2; // Location of the start/finish line
 
-	int checkpoints; // Number of checkpoints; this is used to render the
+	private int checkpoints; // Number of checkpoints; this is used to render the
 						// circuit
-	Graphics2D gr; // Used to edit the image
-	BufferedImage image;// Graphical representation of the circuit
-	GraphRace ppr; // Parental class
-	Polygon curbout, curbin; // Inner field and outter field
-	public boolean correct = false;
+	
+	private Graphics2D gr; // Used to edit the image
+	private BufferedImage image;// Graphical representation of the circuit
+	
+	private GeneralPath curbout, curbin;
 
-	int[] chkx, chky; // Stores the checkpoints
+	private int[] chkx, chky; // Stores the checkpoints
 
-	int hsize, vsize, gridsize; // Actual size of the circuit on the screen and
+	private int hsize, vsize, gridSize; // Actual size of the circuit on the screen and
 								// the size of the grid
 	final int MG = 5; // Margin around the circuit
 
@@ -55,18 +57,20 @@ public class Circuit {
 	 * @param p
 	 *            Parental game object
 	 */
-	public Circuit(int sx, int sy, int chk, GraphRace p) {
-		sizex = sx + 2 * MG;
-		sizey = sy + 2 * MG;
+	public Circuit(int sx, int sy, int chk, int gridSize) {
+		
+		width = sx + 2 * MG;
+		height = sy + 2 * MG;
 		checkpoints = chk;
-		ppr = p;
+		
+		this.gridSize = gridSize;
 	}
 
 	/**
 	 * Initialises a new circuit
 	 */
 	public void init() {
-		circ = new int[sizex][sizey];
+		circ = new int[width][height];
 		chkx = new int[checkpoints + MG];
 		chky = new int[checkpoints + MG];
 
@@ -74,17 +78,16 @@ public class Circuit {
 
 		setstart(); // Find start/finishline
 
-		gridsize = ppr.getgame().getgridsize();
-		dographics();
-		correct = true;
+		dographics(width, height, gridSize);
 	}
 
 	/**
 	 * Draws the circuit
 	 */
-	public void dographics() {
-		hsize = sizex * gridsize;
-		vsize = sizey * gridsize;
+	public void dographics(int width, int height, int gridSize) {
+		
+		hsize = width * gridSize;
+		vsize = height * gridSize;
 
 		image = new BufferedImage(hsize, vsize, BufferedImage.TYPE_INT_RGB);
 		gr = image.createGraphics();
@@ -92,13 +95,14 @@ public class Circuit {
 		gr.setColor(Color.WHITE);
 		gr.fillRect(0, 0, hsize, vsize);
 
-		teken_grid(); // Draw the circuit-points
-		curbout = new Polygon();
-		curbin = new Polygon();
-		omtrek(); // Draw the curbstones
+		drawGrid(gr); // Draw the circuit-points
+		
+		curbout = new GeneralPath();
+		curbin = new GeneralPath();
+		
+		omtrek(gr); // Draw the curbstones
 
-		// fill(curbin, Color.cyan);
-		drawstart(); // Draw the start/finish line
+		drawstart(gr); // Draw the start/finish line
 	}
 
 	/*
@@ -114,8 +118,8 @@ public class Circuit {
 	 */
 	public int terrain(Position p) {
 
-		if ((p.getX() < 0) || (p.getX() >= sizex) || (p.getY() < 0)
-				|| (p.getY() >= sizey)) {
+		if ((p.getX() < 0) || (p.getX() >= width) || (p.getY() < 0)
+				|| (p.getY() >= height)) {
 			return -1;
 		}
 		return circ[p.getX()][p.getY()];
@@ -130,14 +134,14 @@ public class Circuit {
 	 * @return the horizontal size of the circuit
 	 */
 	public int getsizex() {
-		return sizex;
+		return width;
 	}
 
 	/*
 	 * @return the vertical size of the circuit
 	 */
 	public int getsizey() {
-		return sizey;
+		return height;
 	}
 
 	/*
@@ -161,6 +165,10 @@ public class Circuit {
 		return startx2;
 	}
 
+	public int getGridSize() {
+		return gridSize;
+	}
+	
 	/*--------------------------------------------------------------*/
 	/*-------------- These functions render the circuit ------------*/
 
@@ -171,8 +179,8 @@ public class Circuit {
 	 * has sometimes more.
 	 */
 	void trace() {
-		int i = 0, j, k, x, y, rx = (int) ((sizex - 2 * MG) / 2), // Radius X
-		ry = (int) ((sizey - 2 * MG) / 2); // Radius Y
+		int i = 0, j, k, x, y, rx = (int) ((width - 2 * MG) / 2), // Radius X
+		ry = (int) ((height - 2 * MG) / 2); // Radius Y
 		double b, rc;
 
 		for (b = 0; b <= 2 * Math.PI; b += (2 * Math.PI) / checkpoints) // Generate
@@ -229,9 +237,9 @@ public class Circuit {
 			}
 		}
 
-		for (x = 1; x < sizex; x++)
+		for (x = 1; x < width; x++)
 			// Expand circuit to points around the route
-			for (y = 1; y < sizey; y++)
+			for (y = 1; y < height; y++)
 				if (circ[x][y] == 1) {
 					if (circ[x + 1][y] != 1)
 						circ[x + 1][y] = 2;
@@ -250,9 +258,9 @@ public class Circuit {
 					if (circ[x - 1][y - 1] != 1)
 						circ[x - 1][y - 1] = 2;
 				}
-		for (x = 0; x < sizex; x++)
+		for (x = 0; x < width; x++)
 			// Store the circuit in the array
-			for (y = 0; y < sizey; y++)
+			for (y = 0; y < height; y++)
 				if (circ[x][y] == 2)
 					circ[x][y] = 1;
 
@@ -286,24 +294,21 @@ public class Circuit {
 	 * Paint the buffered image onto the screen
 	 */
 	public void paint(Graphics g) {
-		g.drawImage(image, 0, 0, ppr);
+		g.drawImage(image, 0, 0, null);
 	}
 
 	/**
 	 * Draws the circuit-grid into the Graphics-object.
 	 */
-	void teken_grid() {
-		int a, b, x, y;
-		// Color c = new Color(70, 70, 70);
+	void drawGrid(Graphics2D gr) {
 
-		Color c = Color.LIGHT_GRAY;
-
-		for (x = 0; x < sizex; x++)
-			// Draw vertical gridlines
-			line(x, 0, x, sizey, c, GRID_STROKE);
-		for (y = 0; y < sizey; y++)
-			// Draw horizontal gridlines
-			line(0, y, sizex, y, c, GRID_STROKE);
+		for (int x = 0; x < width; x++) {
+			line(gr, x, 0, x, height, Color.LIGHT_GRAY, GRID_STROKE);
+		}
+		
+		for (int y = 0; y < height; y++) {
+			line(gr, 0, y, width, y, Color.LIGHT_GRAY, GRID_STROKE);
+		}
 	}
 
 	int x, y, vx, vy, x_oud, y_oud, vx_oud, vy_oud, curbcount;
@@ -312,14 +317,14 @@ public class Circuit {
 	/**
 	 * Call this function to Draw the curb-stones into the Buffered image.
 	 */
-	void omtrek() {
-		curbcount = 2 * sizex + 2 * sizey; // Maximum number of curbstones
+	void omtrek(Graphics2D gr) {
+		curbcount = 2 * width + 2 * height; // Maximum number of curbstones
 		x = 0;
 		y = 0;
 
 		do // Search first white dot for the outer curb-stones
 		{
-			if (x > sizex) {
+			if (x > width) {
 				x = 0;
 				y++;
 			}
@@ -328,10 +333,10 @@ public class Circuit {
 		x -= 1;
 		vx = -1;
 		vy = 0;
-		do_omtrek(curbout, curbcount); // Calculate the outer curbstones
-
-		x = (int) (MG + sizex) / 2;
-		y = (int) (MG + sizey) / 2;
+		createTrackBorder(curbout, curbcount); // Calculate the outer curbstones
+		
+		x = (int) (MG + width) / 2;
+		y = (int) (MG + height) / 2;
 		do {
 			x++; // Search first white dot for the inner curb-stones
 		} while (terrain(x, y) <= 0);
@@ -339,7 +344,12 @@ public class Circuit {
 		x -= 1;
 		vx = -1;
 		vy = 0;
-		do_omtrek(curbin, curbcount); // Calculate the inner curbstones
+		createTrackBorder(curbin, curbcount); // Calculate the inner curbstones
+		
+		gr.setColor(Color.BLACK);
+		gr.setStroke(TRACK_STROKE);
+		gr.draw(curbout);
+		gr.draw(curbin);
 	}
 
 	/**
@@ -351,30 +361,28 @@ public class Circuit {
 	 *            Array with x-coordinates for the curb-polygon
 	 * @param curby
 	 *            Array with y-coordinates for the curb-polygon
-	 * @param end
+	 * @param borderPoints
 	 *            Number of iterations.
 	 */
-	void do_omtrek(Polygon pol, int end) {
-		int z = 0, i = 0, x1, y1, n = 0;
+	
+	void createTrackBorder(GeneralPath border, int borderPoints) {
+		
+		int z = 0;
+		int i = 0;
+		
+		boolean flag = false;
 
-		boolean curb = true;
-		boolean baan = false;
-
-		pol.addPoint(x * gridsize, y * gridsize);
+		border.moveTo(x*gridSize, y*gridSize);
 
 		x_oud = x;
 		y_oud = y;
-		x1 = x_oud;
-		y1 = y_oud;
 		vx_oud = vx;
 		vy_oud = vy;
 
 		do {
-			x1 = x;
-			y1 = y;
 
 			i = 0;
-			baan = false;
+			flag = false;
 
 			if (rechtdoor()) {
 				while (links() && i < 4)
@@ -382,31 +390,31 @@ public class Circuit {
 				if (i >= 3)
 					z = 9999;
 			} else {
-				if (!baan)
-					baan = rechts();
-				if (!baan)
-					baan = rechts();
-				if (!baan)
-					baan = rechtdoor();
-				if (!baan)
-					baan = rechts();
-				if (!baan)
-					baan = rechtdoor();
-				if (!baan)
-					baan = rechts();
-				if (!baan)
-					baan = rechtdoor();
-				terug();
-				curb = !curb;
-				line(x1, y1, x, y, Color.BLACK, TRACK_STROKE);
-				n++;
-				pol.addPoint(x * gridsize, y * gridsize);
+				if (!flag)
+					flag = rechts();
+				if (!flag)
+					flag = rechts();
+				if (!flag)
+					flag = rechtdoor();
+				if (!flag)
+					flag = rechts();
+				if (!flag)
+					flag = rechtdoor();
+				if (!flag)
+					flag = rechts();
+				if (!flag)
+					flag = rechtdoor();
+				
+				back();
+
+				border.lineTo(x * gridSize, y * gridSize);
+
 				z++;
 			}
-		} while (z <= end);
+		} while (z <= borderPoints);
 	}
 
-	void terug() {
+	void back() {
 		x = x_oud;
 		y = y_oud;
 		vx = vx_oud;
@@ -501,58 +509,33 @@ public class Circuit {
 	/**
 	 * Draws a line between two points
 	 */
-	void line(int x1, int y1, int x2, int y2, Color c, Stroke stroke) {
+	void line(Graphics2D g, int x1, int y1, int x2, int y2, Color c, Stroke stroke) {
 		
-		gr.setColor(c);
-		gr.setStroke(stroke);
+		g.setColor(c);
+		g.setStroke(stroke);
 
 		if ((x1 < 0) || (y1 < 0) || (x2 < 0) || (y2 < 0))
 			return;
 		
-		gr.drawLine(x1 * gridsize, y1 * gridsize, x2 * gridsize, y2 * gridsize);
+		g.drawLine(x1 * gridSize, y1 * gridSize, x2 * gridSize, y2 * gridSize);
 	}
 
 	/**
 	 * Little function for drawing the start-finish line
 	 */
-	public void drawstart() {
-		gr.setColor(Color.white);
+	public void drawstart(Graphics2D gr) {
+		gr.setColor(Color.BLACK);
 		for (int i = 0; i < startx2 - startx1; i += 2)
-			gr.drawLine((startx1 + i - 1) * gridsize, starty * gridsize,
-					(startx1 + i) * gridsize, starty * gridsize);
+			gr.drawLine((startx1 + i - 1) * gridSize, starty * gridSize,
+					(startx1 + i) * gridSize, starty * gridSize);
 		for (int i = 1; i < startx2 - startx1; i += 2)
-			gr.drawLine((startx1 + i - 1) * gridsize, starty * gridsize + 1,
-					(startx1 + i) * gridsize, starty * gridsize + 1);
+			gr.drawLine((startx1 + i - 1) * gridSize, starty * gridSize + 1,
+					(startx1 + i) * gridSize, starty * gridSize + 1);
 		gr.setColor(Color.gray);
-		gr.drawLine((startx1 - 1) * gridsize, starty * gridsize - 1,
-				(startx2 - 1) * gridsize, starty * gridsize - 1);
-		gr.drawLine((startx1 - 1) * gridsize, starty * gridsize + 2,
-				(startx2 - 1) * gridsize, starty * gridsize + 2);
+		gr.drawLine((startx1 - 1) * gridSize, starty * gridSize - 1,
+				(startx2 - 1) * gridSize, starty * gridSize - 1);
+		gr.drawLine((startx1 - 1) * gridSize, starty * gridSize + 2,
+				(startx2 - 1) * gridSize, starty * gridSize + 2);
 	}
 
-	/**
-	 * Draw a filled polygon
-	 */
-	void fill(Polygon pol, Color c) {
-		gr.setColor(c);
-		gr.fillPolygon(pol);
-	}
-
-	/**
-	 * Draw a filled circle
-	 */
-	void fillcircle(int x, int y, Color c) {
-		gr.setColor(c);
-		int s = (int) gridsize;
-		if ((x < 0) || (y < 0))
-			return;
-		gr.fillOval(x * gridsize - s, y * gridsize - s, 2 * s, 2 * s);
-	}
-
-	/*********************************************************
-	 * For testing purposes only:
-	 */
-	public Circuit(GraphRace p) {
-		ppr = p;
-	}
 }
