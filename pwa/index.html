@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#000000">
+    <meta name="description" content="GraphRace - Paper and Pencil Racing Game">
+    <title>GraphRace</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon" href="icons/icon-192.png">
+</head>
+<body>
+    <div id="game-container">
+        <div id="top-panel">
+            <h1>GraphRace</h1>
+        </div>
+        
+        <div id="controls-panel">
+            <button id="new-game-btn">New Game</button>
+            <button id="computer-move-btn">Computer Move</button>
+        </div>
+        
+        <div id="info-panel">
+            <div id="player-info">Player: </div>
+            <div id="message-info">Do a move</div>
+            <div id="turn-info">Turn: 0</div>
+        </div>
+        
+        <div id="canvas-container">
+            <canvas id="game-canvas"></canvas>
+        </div>
+    </div>
+
+    <!-- New Game Dialog -->
+    <div id="new-game-dialog" class="modal">
+        <div class="modal-content">
+            <h2>New Game</h2>
+            <div id="players-config">
+                <div class="player-config">
+                    <label>Player 1:</label>
+                    <input type="text" id="player1-name" value="Computer" />
+                    <select id="player1-type">
+                        <option value="computer">Computer</option>
+                        <option value="human">Human</option>
+                    </select>
+                </div>
+                <div class="player-config">
+                    <label>Player 2:</label>
+                    <input type="text" id="player2-name" value="Human" />
+                    <select id="player2-type">
+                        <option value="human" selected>Human</option>
+                        <option value="computer">Computer</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-buttons">
+                <button id="start-game-btn">Start Game</button>
+                <button id="cancel-game-btn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/position.js"></script>
+    <script src="js/step.js"></script>
+    <script src="js/car.js"></script>
+    <script src="js/circuit.js"></script>
+    <script src="js/player.js"></script>
+    <script src="js/game.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        // Register service worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js')
+                .then(reg => console.log('Service Worker registered', reg))
+                .catch(err => console.log('Service Worker registration failed', err));
+        }
+    </script>
+</body>
+</html>
