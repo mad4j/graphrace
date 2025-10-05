@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Generate Icons</title>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <script>
+        const sizes = [72, 96, 128, 144, 152, 192, 384, 512];
+        
+        sizes.forEach(size => {
+            const canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d');
+            
+            // Background
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, size, size);
+            
+            // Draw checkered flag pattern
+            const squareSize = size / 8;
+            for (let i = 0; i < 8; i++) {
+                for (let j = 0; j < 8; j++) {
+                    if ((i + j) % 2 === 0) {
+                        ctx.fillStyle = '#FFFFFF';
+                    } else {
+                        ctx.fillStyle = '#000000';
+                    }
+                    ctx.fillRect(i * squareSize, j * squareSize, squareSize, squareSize);
+                }
+            }
+            
+            // Add text
+            ctx.fillStyle = '#FF0000';
+            ctx.font = `bold ${size / 4}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('GR', size / 2, size / 2);
+            
+            // Download
+            canvas.toBlob((blob) => {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `icon-${size}.png`;
+                a.click();
+            });
+        });
+        
+        document.write('<p>Icons generated! Check your downloads folder.</p>');
+    </script>
+</body>
+</html>
