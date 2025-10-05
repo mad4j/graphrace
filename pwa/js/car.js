@@ -15,7 +15,7 @@ class Car {
         this.hist[++this.turn] = step;
     }
 
-    fault() {
+    markFault() {
         this.fault[this.turn] = true;
         this.faultcount++;
     }

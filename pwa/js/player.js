@@ -34,7 +34,7 @@ class Player {
         return this.type === Player.COM;
     }
 
-    type() {
+    getType() {
         return this.type;
     }
 
@@ -84,6 +84,8 @@ class Player {
                 break;
         }
 
+        this.checkterrain();
+        this.game.render();
         this.game.nextplayer();
         this.game.wait = false;
     }
@@ -95,7 +97,7 @@ class Player {
     checkterrain() {
         if (this.circuit.terrain(this.car.getCurrentPos()) === 0) {
             this.car.move(new Step(0, 0));
-            this.car.fault();
+            this.car.markFault();
         }
     }
 

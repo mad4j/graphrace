@@ -286,7 +286,7 @@ class Game {
         const gridX = Math.round(x / this.gridsize);
         const gridY = Math.round(y / this.gridsize);
 
-        if (this.currentplayer().type !== Player.HUM) {
+        if (this.currentplayer().getType() !== Player.HUM) {
             this.currentplayer().ask();
         } else {
             this.currentplayer().clicked(gridX, gridY);

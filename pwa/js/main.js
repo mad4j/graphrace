@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const player = game.currentplayer();
 
-        if (player.type !== Player.HUM) {
+        if (player.getType() !== Player.HUM) {
             player.ask();
             game.wait = false;
             return;
